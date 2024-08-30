@@ -7,7 +7,7 @@ import numpy as np
 import os
 import docx2txt
 
-os.environ["GOOGLE_API_KEY"] = 'AIzaSyBbepUh8x3CqpkxNFnJ1IX0dFc0UNTwwb'
+os.environ["GOOGLE_API_KEY"] = 'AIzaSyB2fb5UXRhCToKettFZ2VM4HlJhzOVvXz0'
 # Set up the embeddings and LLM models
 embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest")
