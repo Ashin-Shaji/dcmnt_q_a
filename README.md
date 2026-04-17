@@ -54,6 +54,54 @@ The retrieval engine uses **Numpy-accelerated similarity scoring** to identify t
 similarities = [np.dot(question_embedding, text_embedding) for text_embedding in text_embeddings]
 most_relevant_index = np.argmax(similarities)
 ```
+## Logic Flowchart
+
+```mermaid
+graph TD
+    %% Entry Point
+    Start((Start)) --> Init[Initialize Models<br/>Gemini 1.5 Pro + Text-Embedding-004]
+    Init --> Sidebar{Sidebar: File Management}
+
+    %% File Ingestion
+    Sidebar --> Upload[Upload PDF/DOCX/TXT]
+    Sidebar --> Select[Choose Existing File]
+    
+    Upload --> Save[Save to 'pdfs' Folder]
+    Select --> Proceed{Click 'Proceed'?}
+
+    %% Processing Pipeline
+    Proceed --> Extraction[Extract Text based on Extension<br/>PyMuPDF / Docx2txt / Read]
+    Extraction --> Chunking[Chunk Text<br/>Size: 1000 chars]
+    Chunking --> Embedding[Generate Vector Embeddings<br/>Google Embedding Model]
+    Embedding --> SessionStore[Store in st.session_state]
+
+    %% Query Logic
+    SessionStore --> UserQuery[Input Question]
+    UserQuery --> AnswerTrigger{Click 'Get Answer'?}
+    
+    %% Similarity Search & Generation
+    AnswerTrigger --> QEmbedding[Embed User Question]
+    QEmbedding --> Similarity[Cosine Similarity Search<br/>Find Most Relevant Chunk]
+    Similarity --> Context[Select Top Chunk as Context]
+    Context --> LLM[Invoke Gemini Pro<br/>Context + Prompt + Question]
+    
+    %% Output
+    LLM --> Display[Display Wrapped Answer]
+    Display --> End((End))
+
+    %% Clearing Logic
+    Sidebar --> Clear[Clear All Files]
+    Clear --> Reset[Reset Session State & Folder]
+    Reset --> Sidebar
+
+    %% Styling
+    style Start fill:#f9f,stroke:#333,stroke-width:2px
+    style End fill:#f9f,stroke:#333,stroke-width:2px
+    style Extraction fill:#007bff,color:#fff
+    style Embedding fill:#28a745,color:#fff
+    style LLM fill:#6f42c1,color:#fff
+    style Similarity fill:#fd7e14,color:#fff
+```
 
 ### Prompt Guardrails
 To ensure accuracy, the system uses a **Restricted Context Prompt**:
